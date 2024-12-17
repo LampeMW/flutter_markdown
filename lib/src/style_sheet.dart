@@ -61,6 +61,7 @@ class MarkdownStyleSheet {
     this.blockquoteAlign = WrapAlignment.start,
     this.codeblockAlign = WrapAlignment.start,
     this.superscriptFontFeatureTag,
+    this.sup,
     @Deprecated('Use textScaler instead.') this.textScaleFactor,
     TextScaler? textScaler,
   })  : assert(
@@ -94,6 +95,7 @@ class MarkdownStyleSheet {
           'th': tableHead,
           'tr': tableBody,
           'td': tableBody,
+          'sup': sup,
         };
 
   /// Creates a [MarkdownStyleSheet] from the [TextStyle]s in the provided [ThemeData].
@@ -101,6 +103,7 @@ class MarkdownStyleSheet {
     assert(theme.textTheme.bodyMedium?.fontSize != null);
     return MarkdownStyleSheet(
       a: const TextStyle(color: Colors.blue),
+      sup: const TextStyle(color: Colors.blue),
       p: theme.textTheme.bodyMedium,
       pPadding: EdgeInsets.zero,
       code: theme.textTheme.bodyMedium!.copyWith(
@@ -168,6 +171,11 @@ class MarkdownStyleSheet {
     assert(theme.textTheme.textStyle.fontSize != null);
     return MarkdownStyleSheet(
       a: theme.textTheme.textStyle.copyWith(
+        color: theme.brightness == Brightness.dark
+            ? CupertinoColors.link.darkColor
+            : CupertinoColors.link.color,
+      ),
+      sup: theme.textTheme.textStyle.copyWith(
         color: theme.brightness == Brightness.dark
             ? CupertinoColors.link.darkColor
             : CupertinoColors.link.color,
@@ -337,6 +345,7 @@ class MarkdownStyleSheet {
           ),
         ),
       ),
+      sup: const TextStyle(color: Colors.blue),
     );
   }
 
@@ -397,6 +406,7 @@ class MarkdownStyleSheet {
     String? superscriptFontFeatureTag,
     @Deprecated('Use textScaler instead.') double? textScaleFactor,
     TextScaler? textScaler,
+    TextStyle? sup,
   }) {
     assert(
       textScaler == null || textScaleFactor == null,
@@ -466,6 +476,7 @@ class MarkdownStyleSheet {
           superscriptFontFeatureTag ?? this.superscriptFontFeatureTag,
       textScaler: newTextScaler,
       textScaleFactor: nextTextScaleFactor,
+      sup: sup ?? this.sup,
     );
   }
 
@@ -534,6 +545,7 @@ class MarkdownStyleSheet {
       // textScaleFactor and the textScaler was derived from that, so should be
       // ignored so that the textScaleFactor continues to be set.
       textScaler: other.textScaleFactor == null ? other.textScaler : null,
+      sup: sup!.merge(other.sup),
     );
   }
 
@@ -700,6 +712,8 @@ class MarkdownStyleSheet {
   @Deprecated('Use textScaler instead.')
   final double? textScaleFactor;
 
+  final TextStyle? sup;
+
   /// Custom font feature tag for font which does not support `sups'
   /// feature to create superscript in footnotes.
   final String? superscriptFontFeatureTag;
@@ -770,7 +784,8 @@ class MarkdownStyleSheet {
         other.blockquoteAlign == blockquoteAlign &&
         other.codeblockAlign == codeblockAlign &&
         other.superscriptFontFeatureTag == superscriptFontFeatureTag &&
-        other.textScaler == textScaler;
+        other.textScaler == textScaler &&
+        other.sup == sup;
   }
 
   @override
@@ -831,6 +846,7 @@ class MarkdownStyleSheet {
       textScaler,
       textScaleFactor,
       superscriptFontFeatureTag,
+      sup,
     ]);
   }
 }

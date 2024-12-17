@@ -284,10 +284,15 @@ class MarkdownBuilder implements md.NodeVisitor {
       }
 
       final TextStyle parentStyle = _inlines.last.style!;
-      _inlines.add(_InlineElement(
-        tag,
-        style: parentStyle.merge(styleSheet.styles[tag]),
-      ));
+      if (tag == 'a' &&
+          (element.attributes['href']?.contains('#fn') ?? false)) {
+        _inlines.add(_InlineElement(tag, style: styleSheet.styles['sup']));
+      } else {
+        _inlines.add(_InlineElement(
+          tag,
+          style: parentStyle.merge(styleSheet.styles[tag]),
+        ));
+      }
     }
 
     return true;
